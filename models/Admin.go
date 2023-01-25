@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"simpleapp/database"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 var db *sql.DB = database.MakeConnection()
@@ -36,8 +38,10 @@ func (Admin) All() ([]Admin, error) {
 }
 
 func (a *Admin) Save() (int64, error) {
-	// TODO: encrypt password here
-	passwd := a.Password
+	passwd, err := bcrypt.GenerateFromPassword([]byte(a.Password), 14)
+	if err != nil {
+		return 0, fmt.Errorf("Save Admin: %v", err)
+	}
 
 	res, err := db.Exec("insert into admins (name, username, password) values(?, ?, ?)", a.Name, a.Username, passwd)
 	if err != nil {
