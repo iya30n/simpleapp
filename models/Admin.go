@@ -1,9 +1,12 @@
 package models
 
 import (
+	"database/sql"
 	"fmt"
 	"simpleapp/database"
 )
+
+var db *sql.DB = database.MakeConnection()
 
 type Admin struct {
 	ID       int64
@@ -13,8 +16,6 @@ type Admin struct {
 }
 
 func (Admin) All() ([]Admin, error) {
-	db := database.MakeConnection()
-
 	var admins []Admin
 
 	rows, err := db.Query("SELECT * FROM admins")
@@ -32,4 +33,29 @@ func (Admin) All() ([]Admin, error) {
 	}
 
 	return admins, nil
+}
+
+func (a *Admin) Save() (int64, error) {
+	// TODO: encrypt password here
+	passwd := a.Password
+
+	res, err := db.Exec("insert into admins (name, username, password) values(?, ?, ?)", a.Name, a.Username, passwd)
+	if err != nil {
+		return 0, fmt.Errorf("Save Admin: %v", err)
+	}
+
+	return res.LastInsertId()
+}
+
+func FindAdmin(id int64) (Admin, error) {
+	var admin Admin
+
+	row := db.QueryRow("select * from admins where id = ?", id)
+
+	err := row.Scan(&admin.ID, &admin.Name, &admin.Username, &admin.Password)
+	if err != nil {
+		return admin, fmt.Errorf("find admin: %v", err)
+	}
+
+	return admin, nil
 }
