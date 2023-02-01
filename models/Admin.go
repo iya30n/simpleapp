@@ -11,10 +11,16 @@ import (
 var db *sql.DB = database.MakeConnection()
 
 type Admin struct {
-	ID       int64 `json:"id"`
+	ID       int64  `json:"id"`
 	Name     string `json:"name"`
-	Username string	`json:"username"`
-	password string
+	Username string `json:"username"`
+	Password string
+}
+
+func (a Admin) CheckPassword(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(a.Password), []byte(password))
+	
+	return err == nil
 }
 
 func (Admin) All() ([]Admin, error) {
@@ -27,7 +33,7 @@ func (Admin) All() ([]Admin, error) {
 
 	for rows.Next() {
 		var admin Admin
-		if err := rows.Scan(&admin.ID, &admin.Name, &admin.Username, &admin.password); err != nil {
+		if err := rows.Scan(&admin.ID, &admin.Name, &admin.Username); err != nil {
 			return admins, fmt.Errorf("getAdmins: %v", err)
 		}
 
@@ -38,7 +44,7 @@ func (Admin) All() ([]Admin, error) {
 }
 
 func (a *Admin) Save() (int64, error) {
-	passwd, err := bcrypt.GenerateFromPassword([]byte(a.password), 14)
+	passwd, err := bcrypt.GenerateFromPassword([]byte(a.Password), 14)
 	if err != nil {
 		return 0, fmt.Errorf("Save Admin: %v", err)
 	}
@@ -56,9 +62,22 @@ func FindAdmin(id int64) (Admin, error) {
 
 	row := db.QueryRow("select * from admins where id = ?", id)
 
-	err := row.Scan(&admin.ID, &admin.Name, &admin.Username, &admin.password)
+	err := row.Scan(&admin.ID, &admin.Name, &admin.Username, &admin.Password)
 	if err != nil {
 		return admin, fmt.Errorf("find admin: %v", err)
+	}
+
+	return admin, nil
+}
+
+func FindAdminByUsername(username string) (Admin, error) {
+	var admin Admin
+
+	row := db.QueryRow("select * from admins where username = ?", username)
+
+	err := row.Scan(&admin.ID, &admin.Name, &admin.Username, &admin.Password)
+	if err != nil {
+		return admin, fmt.Errorf("error on find admin by username: %v", err.Error())
 	}
 
 	return admin, nil
