@@ -1,7 +1,7 @@
 package AuthController
 
 import (
-	//"encoding/json"
+	// "encoding/json"
 	"fmt"
 	"net/http"
 	"simpleapp/models"
@@ -24,10 +24,20 @@ func Login(w http.ResponseWriter, r *http.Request) {
 } */
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	// TODO: validate username, password
+	// TODO: prevent xss and sql injection
 
 	username, password := r.PostFormValue("username"), r.PostFormValue("password")
-	
+
+	if err := validateUsername(username); err != nil {
+		fmt.Fprintf(w, "validation error: %v", err.Error())
+		return
+	}
+
+	if err := validatePassword(password); err != nil {
+		fmt.Fprintf(w, "validation error: %v", err.Error())
+		return
+	}
+
 	admin, err := models.FindAdminByUsername(username)
 	if err != nil {
 		fmt.Fprintf(w, "error on login: %v", err.Error())
@@ -40,4 +50,28 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintln(w, "You are logged in!")
+}
+
+func validateUsername(username string) error {
+	if len(username) < 3 {
+		return fmt.Errorf("username should be more than 3 characters")
+	}
+
+	if len(username) > 100 {
+		return fmt.Errorf("username should be less than 100 characters")
+	}
+
+	return nil
+}
+
+func validatePassword(password string) error {
+	if len(password) < 8 {
+		return fmt.Errorf("password should be more than 8 characters")
+	}
+
+	if len(password) > 100 {
+		return fmt.Errorf("password should be less than 100 characters")
+	}
+
+	return nil
 }
