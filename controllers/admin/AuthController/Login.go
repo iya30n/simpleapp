@@ -2,9 +2,11 @@ package AuthController
 
 import (
 	// "encoding/json"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"simpleapp/models"
+	"simpleapp/modules/jwtHandler"
 )
 
 // this solution works for raw json
@@ -49,7 +51,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintln(w, "You are logged in!")
+	jwt, err := jwtHandler.Generate(admin)
+	if err != nil {
+		fmt.Fprintln(w, "Server Error!")
+		return
+	}
+
+	json.NewEncoder(w).Encode(map[string]string {
+		"token": jwt,
+	})
 }
 
 func validateUsername(username string) error {
