@@ -77,7 +77,7 @@ func FindAdminByUsername(username string) (Admin, error) {
 
 	err := row.Scan(&admin.ID, &admin.Name, &admin.Username, &admin.password)
 	if err != nil {
-		return admin, fmt.Errorf("error on find admin by username: %v", err.Error())
+		return admin, err
 	}
 
 	return admin, nil

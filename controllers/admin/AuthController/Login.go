@@ -31,35 +31,67 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	username, password := r.PostFormValue("username"), r.PostFormValue("password")
 
 	if err := validateUsername(username); err != nil {
-		fmt.Fprintf(w, "validation error: %v", err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+
+		json.NewEncoder(w).Encode(map[string]string{
+			"message": fmt.Sprintf("validation error: %v", err.Error()),
+		})
+
 		return
 	}
 
 	if err := validatePassword(password); err != nil {
-		fmt.Fprintf(w, "validation error: %v", err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+
+		json.NewEncoder(w).Encode(map[string]string{
+			"message": fmt.Sprintf("validation error: %v", err.Error()),
+		})
+
 		return
 	}
 
 	admin, err := models.FindAdminByUsername(username)
 	if err != nil {
-		fmt.Fprintf(w, "error on login: %v", err.Error())
+		w.WriteHeader(http.StatusBadRequest)
+
+		json.NewEncoder(w).Encode(map[string]string{
+			"message": "invalid username or password!",
+		})
+
 		return
 	}
 
 	if !admin.CheckPassword(password) {
-		fmt.Fprintln(w, "invalid username or password")
+		w.WriteHeader(http.StatusBadRequest)
+
+		json.NewEncoder(w).Encode(map[string]string{
+			"message": "invalid username or password!",
+		})
+
 		return
 	}
 
 	jwt, err := jwtHandler.Generate(admin)
 	if err != nil {
-		fmt.Fprintln(w, "Server Error!")
+		w.WriteHeader(http.StatusInternalServerError)
+		
+		json.NewEncoder(w).Encode(map[string]string{
+			"message": "Internal Server Error!",
+		})
+		
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]string {
+	json.NewEncoder(w).Encode(map[string]string{
 		"token": jwt,
 	})
+
+	// or we can set cookie
+	/* http.SetCookie(w, &http.Cookie{
+		Name: "token",
+		Value: jwt,
+		Expires: expireTime,
+	}) */
 }
 
 func validateUsername(username string) error {
