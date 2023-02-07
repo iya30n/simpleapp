@@ -7,8 +7,8 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-type Claims struct {
-	username string `json:"username"`
+type claims struct {
+	username string
 	jwt.RegisteredClaims
 }
 
@@ -17,7 +17,7 @@ var jwtKey []byte = []byte("simple-app-jwt-key")
 func Generate(admin models.Admin) (string, error) {
 	expirationTime := time.Now().Add(5 * time.Minute)
 
-	claims := &Claims{
+	claims := &claims{
 		username: admin.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
