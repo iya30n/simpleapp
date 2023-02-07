@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"simpleapp/models"
 	"simpleapp/modules/jwtHandler"
+	"simpleapp/validations/login"
 )
 
 // this solution works for raw json
@@ -30,7 +31,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	username, password := r.PostFormValue("username"), r.PostFormValue("password")
 
-	if err := validateUsername(username); err != nil {
+	if err := login.ValidateUsername(username); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 
 		json.NewEncoder(w).Encode(map[string]string{
@@ -40,7 +41,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := validatePassword(password); err != nil {
+	if err := login.ValidatePassword(password); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 
 		json.NewEncoder(w).Encode(map[string]string{
@@ -92,28 +93,4 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Value: jwt,
 		Expires: expireTime,
 	}) */
-}
-
-func validateUsername(username string) error {
-	if len(username) < 3 {
-		return fmt.Errorf("username should be more than 3 characters")
-	}
-
-	if len(username) > 100 {
-		return fmt.Errorf("username should be less than 100 characters")
-	}
-
-	return nil
-}
-
-func validatePassword(password string) error {
-	if len(password) < 8 {
-		return fmt.Errorf("password should be more than 8 characters")
-	}
-
-	if len(password) > 100 {
-		return fmt.Errorf("password should be less than 100 characters")
-	}
-
-	return nil
 }
