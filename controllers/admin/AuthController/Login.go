@@ -2,11 +2,11 @@ package AuthController
 
 import (
 	// "encoding/json"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"simpleapp/models"
 	"simpleapp/modules/jwtHandler"
+	responsehandler "simpleapp/modules/responseHandler"
 	"simpleapp/validations/login"
 )
 
@@ -26,66 +26,70 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "your username is %s, your password is %s", l.Username, l.Password)
 } */
 
+var responseData map[string]string
+
 func Login(w http.ResponseWriter, r *http.Request) {
 	// TODO: prevent xss and sql injection
 
 	username, password := r.PostFormValue("username"), r.PostFormValue("password")
 
 	if err := login.ValidateUsername(username); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-
-		json.NewEncoder(w).Encode(map[string]string{
+		responseData = map[string]string{
 			"message": fmt.Sprintf("validation error: %v", err.Error()),
-		})
+		}
+
+		responsehandler.Json(w, responseData, http.StatusBadRequest)
 
 		return
 	}
 
 	if err := login.ValidatePassword(password); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-
-		json.NewEncoder(w).Encode(map[string]string{
+		responseData = map[string]string{
 			"message": fmt.Sprintf("validation error: %v", err.Error()),
-		})
+		}
+
+		responsehandler.Json(w, responseData, http.StatusBadRequest)
 
 		return
 	}
 
 	admin, err := models.FindAdminByUsername(username)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-
-		json.NewEncoder(w).Encode(map[string]string{
+		responseData = map[string]string{
 			"message": "invalid username or password!",
-		})
+		}
+
+		responsehandler.Json(w, responseData, http.StatusBadRequest)
 
 		return
 	}
 
 	if !admin.CheckPassword(password) {
-		w.WriteHeader(http.StatusBadRequest)
-
-		json.NewEncoder(w).Encode(map[string]string{
+		responseData = map[string]string{
 			"message": "invalid username or password!",
-		})
+		}
+
+		responsehandler.Json(w, responseData, http.StatusBadRequest)
 
 		return
 	}
 
 	jwt, err := jwtHandler.Generate(admin)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		
-		json.NewEncoder(w).Encode(map[string]string{
+		responseData = map[string]string{
 			"message": "Internal Server Error!",
-		})
-		
+		}
+
+		responsehandler.Json(w, responseData, http.StatusInternalServerError)
+
 		return
 	}
 
-	json.NewEncoder(w).Encode(map[string]string{
+	responseData = map[string]string{
 		"token": jwt,
-	})
+	}
+
+	responsehandler.Json(w, responseData, http.StatusAccepted)
 
 	// or we can set cookie
 	/* http.SetCookie(w, &http.Cookie{
