@@ -9,6 +9,7 @@ import (
 func main() {
 	http.HandleFunc("/admin/admins", AdminController.List)
 	http.HandleFunc("/admin/login", AuthController.Login)
+	http.HandleFunc("/admin/register", AuthController.Register)
 
 	http.ListenAndServe(":9090", nil)
 }

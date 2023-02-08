@@ -7,7 +7,7 @@ import (
 	"simpleapp/models"
 	"simpleapp/modules/jwtHandler"
 	responsehandler "simpleapp/modules/responseHandler"
-	"simpleapp/validations/login"
+	"simpleapp/validations/adminValidation"
 )
 
 // this solution works for raw json
@@ -29,11 +29,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 var responseData map[string]string
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	// TODO: prevent xss and sql injection
-
 	username, password := r.PostFormValue("username"), r.PostFormValue("password")
 
-	if err := login.ValidateUsername(username); err != nil {
+	if err := adminValidation.ValidateUsername(username); err != nil {
 		responseData = map[string]string{
 			"message": fmt.Sprintf("validation error: %v", err.Error()),
 		}
@@ -43,7 +41,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := login.ValidatePassword(password); err != nil {
+	if err := adminValidation.ValidatePassword(password); err != nil {
 		responseData = map[string]string{
 			"message": fmt.Sprintf("validation error: %v", err.Error()),
 		}
