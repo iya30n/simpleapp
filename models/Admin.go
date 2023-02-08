@@ -26,14 +26,14 @@ func (a Admin) CheckPassword(password string) bool {
 func (Admin) All() ([]Admin, error) {
 	var admins []Admin
 
-	rows, err := db.Query("SELECT * FROM admins")
+	rows, err := db.Query("SELECT id, name, username FROM admins")
 	if err != nil {
 		return admins, fmt.Errorf("get all admins: %v", err)
 	}
 
 	for rows.Next() {
 		var admin Admin
-		if err := rows.Scan(&admin.ID, &admin.Name, &admin.Username, &admin.Password); err != nil {
+		if err := rows.Scan(&admin.ID, &admin.Name, &admin.Username); err != nil {
 			return admins, fmt.Errorf("getAdmins: %v", err)
 		}
 
@@ -60,9 +60,9 @@ func (a *Admin) Save() (int64, error) {
 func FindAdmin(id int64) (Admin, error) {
 	var admin Admin
 
-	row := db.QueryRow("select * from admins where id = ?", id)
+	row := db.QueryRow("select id, name, username from admins where id = ?", id)
 
-	err := row.Scan(&admin.ID, &admin.Name, &admin.Username, &admin.Password)
+	err := row.Scan(&admin.ID, &admin.Name, &admin.Username)
 	if err != nil {
 		return admin, fmt.Errorf("find admin: %v", err)
 	}
@@ -73,9 +73,9 @@ func FindAdmin(id int64) (Admin, error) {
 func FindAdminByUsername(username string) (Admin, error) {
 	var admin Admin
 
-	row := db.QueryRow("select * from admins where username = ?", username)
+	row := db.QueryRow("select id, name, username from admins where username = ?", username)
 
-	err := row.Scan(&admin.ID, &admin.Name, &admin.Username, &admin.Password)
+	err := row.Scan(&admin.ID, &admin.Name, &admin.Username)
 	if err != nil {
 		return admin, err
 	}
