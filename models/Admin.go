@@ -73,9 +73,9 @@ func FindAdmin(id int64) (Admin, error) {
 func FindAdminByUsername(username string) (Admin, error) {
 	var admin Admin
 
-	row := db.QueryRow("select id, name, username from admins where username = ?", username)
+	row := db.QueryRow("select * from admins where username = ?", username)
 
-	err := row.Scan(&admin.ID, &admin.Name, &admin.Username)
+	err := row.Scan(&admin.ID, &admin.Name, &admin.Username, &admin.Password)
 	if err != nil {
 		return admin, err
 	}
