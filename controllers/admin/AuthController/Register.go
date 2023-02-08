@@ -15,8 +15,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	name, username, password := r.PostFormValue("name"), r.PostFormValue("username"), r.PostFormValue("password")
 
-	// TODO: check if username exists in the db, return error.
-
 	if err := adminValidation.ValidateName(name); err != nil {
 
 		response = map[string]string{"Message": err.Error(),}
@@ -44,6 +42,14 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if checkUsernameExists(username) {
+		response = map[string]string{"message": "Username already taken!"}
+
+		responsehandler.Json(w, response, http.StatusBadRequest)
+
+		return
+	}
+
 	admin := models.Admin{
 		Name: name,
 		Username: username,
@@ -60,6 +66,12 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response = map[string]string{"message": "Admin created successfully."}
-	
+
 	responsehandler.Json(w, response, http.StatusCreated)
+}
+
+func checkUsernameExists(username string) bool {
+	admin, _ := models.FindAdminByUsername(username)
+
+	return admin.ID > 0
 }
