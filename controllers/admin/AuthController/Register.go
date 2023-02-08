@@ -5,15 +5,18 @@ import (
 	"simpleapp/models"
 	responsehandler "simpleapp/modules/responseHandler"
 	"simpleapp/validations/adminValidation"
+
+	"github.com/microcosm-cc/bluemonday"
 )
 
 var response map[string]string
 
 func Register(w http.ResponseWriter, r *http.Request) {
-	// TODO: prevent xss
 	// TODO: check if admin is logged in and has access to this action.
 
-	name, username, password := r.PostFormValue("name"), r.PostFormValue("username"), r.PostFormValue("password")
+	p := bluemonday.UGCPolicy()
+
+	name, username, password := p.Sanitize(r.PostFormValue("name")), p.Sanitize(r.PostFormValue("username")), p.Sanitize(r.PostFormValue("password"))
 
 	if err := adminValidation.ValidateName(name); err != nil {
 
