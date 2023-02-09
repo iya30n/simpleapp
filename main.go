@@ -23,9 +23,10 @@ func authMiddleware(fn http.HandlerFunc) http.HandlerFunc {
 
 func main() {
 	http.HandleFunc("/admin/admins", authMiddleware(AdminController.List))
+
 	http.HandleFunc("/admin/login", AuthController.Login)
 	http.HandleFunc("/admin/register", authMiddleware(AuthController.Register))
-	http.HandleFunc("/admin/refresh-token", authMiddleware(AuthController.Refresh))
+	http.HandleFunc("/admin/refresh-token", AuthController.Refresh)
 
 	http.ListenAndServe(":9090", nil)
 }
