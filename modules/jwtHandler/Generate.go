@@ -8,7 +8,7 @@ import (
 )
 
 func Generate(admin models.Admin) (string, error) {
-	expirationTime := time.Now().Add(5 * time.Minute)
+	expirationTime := time.Now().Add(30 * time.Second)
 
 	claims := &Claims{
 		Username: admin.Username,
