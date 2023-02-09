@@ -1,14 +1,14 @@
 package jwtHandler
 
 import (
-	"simpleapp/models"
+	"simpleapp/models/Admin"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func Generate(admin models.Admin) (string, error) {
-	expirationTime := time.Now().Add(30 * time.Second)
+func Generate(admin Admin.AdminModel) (string, error) {
+	expirationTime := time.Now().Add(30 * time.Minute)
 
 	claims := &Claims{
 		Username: admin.Username,

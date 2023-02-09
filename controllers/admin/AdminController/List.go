@@ -3,13 +3,11 @@ package AdminController
 import (
 	"encoding/json"
 	"net/http"
-	"simpleapp/models"
+	"simpleapp/models/Admin"
 )
 
 func List (w http.ResponseWriter, r *http.Request) {
-	adminModel := models.Admin{}
-
-	adminsList, _ := adminModel.All()
+	adminsList, _ := Admin.All()
 
 	err := json.NewEncoder(w).Encode(adminsList)
 	if err != nil {

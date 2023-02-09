@@ -4,7 +4,7 @@ import (
 	// "encoding/json"
 	"fmt"
 	"net/http"
-	"simpleapp/models"
+	"simpleapp/models/Admin"
 	"simpleapp/modules/jwtHandler"
 	responsehandler "simpleapp/modules/responseHandler"
 	"simpleapp/validations/adminValidation"
@@ -51,7 +51,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	admin, err := models.FindAdminByUsername(username)
+	admin, err := Admin.FindByUsername(username)
 	if err != nil {
 		responseData = map[string]string{
 			"message": "invalid username or password!",

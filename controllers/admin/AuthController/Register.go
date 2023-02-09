@@ -2,7 +2,7 @@ package AuthController
 
 import (
 	"net/http"
-	"simpleapp/models"
+	"simpleapp/models/Admin"
 	responsehandler "simpleapp/modules/responseHandler"
 	"simpleapp/validations/adminValidation"
 
@@ -53,13 +53,13 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	admin := models.Admin{
+	admin := Admin.AdminModel{
 		Name: name,
 		Username: username,
 		Password: password,
 	}
 
-	_, err := admin.Save()
+	_, err := Admin.Save(admin)
 	if err != nil {
 		response = map[string]string{"message": "Server Error!. please try later."}
 
@@ -74,7 +74,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func checkUsernameExists(username string) bool {
-	admin, _ := models.FindAdminByUsername(username)
+	admin, _ := Admin.FindByUsername(username)
 
 	return admin.ID > 0
 }
