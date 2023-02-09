@@ -7,6 +7,19 @@ import (
 )
 
 func Refresh(w http.ResponseWriter, r *http.Request) {
+	// Cookie example
+
+	/* c, err := r.Cookie("token")
+	if err != nil {
+		if err == http.ErrNoCookie {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	token := c.Value */
+
 	token := r.Header.Get("Authorization")
 
 	newToken, err := jwtHandler.Refresh(token)
