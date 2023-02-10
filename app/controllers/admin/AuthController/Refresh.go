@@ -2,8 +2,8 @@ package AuthController
 
 import (
 	"net/http"
-	"simpleapp/modules/jwtHandler"
-	responsehandler "simpleapp/modules/responseHandler"
+	"simpleapp/app/modules/jwtHandler"
+	responsehandler "simpleapp/app/modules/responseHandler"
 )
 
 func Refresh(w http.ResponseWriter, r *http.Request) {
@@ -24,9 +24,9 @@ func Refresh(w http.ResponseWriter, r *http.Request) {
 
 	newToken, err := jwtHandler.Refresh(token)
 	if err != nil {
-		responsehandler.Json(w, map[string]string{"message": err.Error(),}, http.StatusBadRequest)
+		responsehandler.Json(w, map[string]string{"message": err.Error()}, http.StatusBadRequest)
 		return
 	}
 
-	responsehandler.Json(w, map[string]string{"token": newToken,}, http.StatusAccepted)
+	responsehandler.Json(w, map[string]string{"token": newToken}, http.StatusAccepted)
 }

@@ -2,9 +2,9 @@ package AuthController
 
 import (
 	"net/http"
-	"simpleapp/models/Admin"
-	responsehandler "simpleapp/modules/responseHandler"
-	"simpleapp/validations/adminValidation"
+	"simpleapp/app/models/Admin"
+	responsehandler "simpleapp/app/modules/responseHandler"
+	"simpleapp/app/validations/adminValidation"
 
 	"github.com/microcosm-cc/bluemonday"
 )
@@ -20,7 +20,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	if err := adminValidation.ValidateName(name); err != nil {
 
-		response = map[string]string{"Message": err.Error(),}
+		response = map[string]string{"Message": err.Error()}
 
 		responsehandler.Json(w, response, http.StatusBadRequest)
 
@@ -29,19 +29,19 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	if err := adminValidation.ValidateUsername(username); err != nil {
 
-		response = map[string]string{"Message": err.Error(),}
+		response = map[string]string{"Message": err.Error()}
 
 		responsehandler.Json(w, response, http.StatusBadRequest)
-		
+
 		return
 	}
 
 	if err := adminValidation.ValidatePassword(password); err != nil {
 
-		response = map[string]string{"Message": err.Error(),}
+		response = map[string]string{"Message": err.Error()}
 
 		responsehandler.Json(w, response, http.StatusBadRequest)
-		
+
 		return
 	}
 
@@ -54,7 +54,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	admin := Admin.AdminModel{
-		Name: name,
+		Name:     name,
 		Username: username,
 		Password: password,
 	}

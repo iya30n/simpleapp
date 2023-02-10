@@ -4,10 +4,10 @@ import (
 	// "encoding/json"
 	"fmt"
 	"net/http"
-	"simpleapp/models/Admin"
-	"simpleapp/modules/jwtHandler"
-	responsehandler "simpleapp/modules/responseHandler"
-	"simpleapp/validations/adminValidation"
+	"simpleapp/app/models/Admin"
+	"simpleapp/app/modules/jwtHandler"
+	responsehandler "simpleapp/app/modules/responseHandler"
+	"simpleapp/app/validations/adminValidation"
 )
 
 // this solution works for raw json

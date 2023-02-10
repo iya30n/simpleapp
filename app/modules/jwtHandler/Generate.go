@@ -1,7 +1,7 @@
 package jwtHandler
 
 import (
-	"simpleapp/models/Admin"
+	"simpleapp/app/models/Admin"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -18,6 +18,6 @@ func Generate(admin Admin.AdminModel) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	
+
 	return token.SignedString(JwtKey)
 }

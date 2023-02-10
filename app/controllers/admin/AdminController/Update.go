@@ -2,9 +2,9 @@ package AdminController
 
 import (
 	"net/http"
-	"simpleapp/models/Admin"
-	responsehandler "simpleapp/modules/responseHandler"
-	"simpleapp/validations/adminValidation"
+	"simpleapp/app/models/Admin"
+	responsehandler "simpleapp/app/modules/responseHandler"
+	"simpleapp/app/validations/adminValidation"
 
 	"github.com/microcosm-cc/bluemonday"
 )
