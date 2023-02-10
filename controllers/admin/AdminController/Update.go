@@ -5,19 +5,18 @@ import (
 	"simpleapp/models/Admin"
 	responsehandler "simpleapp/modules/responseHandler"
 	"simpleapp/validations/adminValidation"
-	"strings"
 
 	"github.com/microcosm-cc/bluemonday"
 )
 
-var response map[string]string
+var response map[string]interface{}
 
 func Update(w http.ResponseWriter, r *http.Request) {
-	adminId := strings.Replace(r.URL.Path, "/admin/admins/", "", 1)
+	adminId := r.URL.Path[len("/admins/admin/edit/"):]
 
 	admin, err := Admin.Find(adminId)
 	if err != nil {
-		response = map[string]string{"message": "Record Not Found!"}
+		response = map[string]interface{}{"message": "Record Not Found!"}
 		responsehandler.Json(w, response, http.StatusNotFound)
 		return
 	}
@@ -27,7 +26,7 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	name, username, password := p.Sanitize(r.PostFormValue("name")), p.Sanitize(r.PostFormValue("username")), p.Sanitize(r.PostFormValue("password"))
 
 	if err := validator(name, username, password); err != nil {
-		response = map[string]string{"message": err.Error()}
+		response = map[string]interface{}{"message": err.Error()}
 
 		responsehandler.Json(w, response, http.StatusBadRequest)
 
@@ -46,9 +45,14 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		admin.Password = password
 	}
 
-	Admin.Update(admin)
+	updatedAdmin, err := Admin.Update(admin)
+	if err != nil {
+		response = map[string]interface{}{"message": "Server Error!"}
+		responsehandler.Json(w, response, http.StatusInternalServerError)
+		return
+	}
 
-	response = map[string]string{"message": "admin updated"}
+	response = map[string]interface{}{"message": "admin updated", "admin": updatedAdmin}
 	responsehandler.Json(w, response, http.StatusAccepted)
 }
 

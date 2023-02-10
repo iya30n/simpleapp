@@ -23,7 +23,7 @@ func authMiddleware(fn http.HandlerFunc) http.HandlerFunc {
 
 func main() {
 	http.HandleFunc("/admin/admins", authMiddleware(AdminController.List))
-	http.HandleFunc("/admin/admins/{:id}", authMiddleware(AdminController.Update))
+	http.HandleFunc("/admin/admins/edit/", authMiddleware(AdminController.Update))
 
 	http.HandleFunc("/admin/login", AuthController.Login)
 	http.HandleFunc("/admin/register", authMiddleware(AuthController.Register))
@@ -34,7 +34,6 @@ func main() {
 
 /* 
 TODO:
-	[] check if username does not exists on jwt verify, return err
 	[] write tests
 	[] validation handler system
 	[] routing system

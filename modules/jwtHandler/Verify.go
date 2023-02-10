@@ -13,7 +13,5 @@ func Verify(token string) bool {
 		return false
 	}
 
-	// TODO: check if username inside of the token does not exists on admins table, return err
-
 	return tkn.Valid
 }
