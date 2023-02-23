@@ -5,31 +5,41 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"simpleapp/core/types/Array"
+	"simpleapp/core/validator/contracts"
+	stringrules "simpleapp/core/validator/rules/string"
 	"strconv"
 	"strings"
-	"simpleapp/core/validator/contracts"
-	"simpleapp/core/validator/rules/string"
 )
 
 type Rule map[string]string
 
-func Validate(req http.Request, validationRules Rule) error {
+func Validate(req *http.Request, validationRules Rule) error {
 	for inputName, rule := range validationRules {
 		reqInput := req.PostFormValue(inputName)
 
 		for _, ruleName := range strings.Split(rule, "|") {
-			callValidator(inputName, ruleName, reqInput)
+			if err := callValidator(inputName, ruleName, reqInput); err != nil {
+				return err
+			}
 		}
 	}
 
 	return nil
 }
 
+var typesList []string = []string{"int", "int32", "int64", "float32", "float64", "string"}
+
 func callValidator(inputName string, ruleName string, inputVal any) error {
 	inputValType := fmt.Sprint(reflect.TypeOf(inputVal))
+
 	// checking type of the input.
-	if ruleName == inputValType && ruleName != inputValType {
-		return fmt.Errorf("type of %s should be %s but %s given", inputName, ruleName, inputValType)
+	if Array.Contains(ruleName, typesList) {
+		if ruleName != inputValType {
+			return fmt.Errorf("type of %s should be %s but %s given", inputName, ruleName, inputValType)
+		}
+
+		return nil
 	}
 
 	// validation rule should be like: min:3
@@ -39,8 +49,8 @@ func callValidator(inputName string, ruleName string, inputVal any) error {
 	}
 
 	funcsList := map[string]contracts.ValidatorFunc{
-		"min": string.Min,
-		"max": string.Max,
+		"min": stringrules.Min,
+		"max": stringrules.Max,
 	}
 
 	// the value of ruleMethod = "min", ruleVal = 3
@@ -50,6 +60,6 @@ func callValidator(inputName string, ruleName string, inputVal any) error {
 	}
 
 	ruleValToInt, _ := strconv.Atoi(ruleVal)
-
-	return funcsList[ruleMethod](inputName, inputVal.(string), ruleValToInt)
+	fn := funcsList[ruleMethod]
+	return fn(inputName, inputVal.(string), ruleValToInt)
 }
