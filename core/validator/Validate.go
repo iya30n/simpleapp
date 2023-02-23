@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"simpleapp/core/validator/contracts"
-	stringValidation "simpleapp/core/validator/validations/string"
+	"simpleapp/core/validator/rules/string"
 )
 
 type Rule map[string]string
@@ -39,8 +39,8 @@ func callValidator(inputName string, ruleName string, inputVal any) error {
 	}
 
 	funcsList := map[string]contracts.ValidatorFunc{
-		"min": stringValidation.Min,
-		"max": stringValidation.Max,
+		"min": string.Min,
+		"max": string.Max,
 	}
 
 	// the value of ruleMethod = "min", ruleVal = 3
