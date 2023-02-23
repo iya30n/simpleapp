@@ -8,9 +8,9 @@ import (
 )
 
 func TestMinFunc(t *testing.T) {
-	errMsg := fmt.Sprintf("the length of %s should be greater than %d", "username", 3)
+	errMsg := fmt.Sprintf("should be greater than %d characters", 3)
 
-	assert.EqualError(t, Min("username", "si", 3), errMsg)
+	assert.EqualError(t, Min("si", 3), errMsg)
 
-	assert.NoError(t, Min("username", "sina21", 3))
+	assert.NoError(t, Min("sina21", 3))
 }

@@ -19,8 +19,8 @@ func Validate(req *http.Request, validationRules Rule) error {
 		reqInput := req.PostFormValue(inputName)
 
 		for _, ruleName := range strings.Split(rule, "|") {
-			if err := callValidator(inputName, ruleName, reqInput); err != nil {
-				return err
+			if err := callValidator(ruleName, reqInput); err != nil {
+				return fmt.Errorf("%s: %v", inputName, err.Error())
 			}
 		}
 	}
@@ -30,13 +30,13 @@ func Validate(req *http.Request, validationRules Rule) error {
 
 var typesList []string = []string{"int", "int32", "int64", "float32", "float64", "string"}
 
-func callValidator(inputName string, ruleName string, inputVal any) error {
+func callValidator(ruleName string, inputVal any) error {
 	inputValType := fmt.Sprint(reflect.TypeOf(inputVal))
 
 	// checking type of the input.
 	if Array.Contains(ruleName, typesList) {
 		if ruleName != inputValType {
-			return fmt.Errorf("type of %s should be %s but %s given", inputName, ruleName, inputValType)
+			return fmt.Errorf("should be %s but %s given", ruleName, inputValType)
 		}
 
 		return nil
@@ -60,6 +60,5 @@ func callValidator(inputName string, ruleName string, inputVal any) error {
 	}
 
 	ruleValToInt, _ := strconv.Atoi(ruleVal)
-	fn := funcsList[ruleMethod]
-	return fn(inputName, inputVal.(string), ruleValToInt)
+	return funcsList[ruleMethod](inputVal.(string), ruleValToInt)
 }

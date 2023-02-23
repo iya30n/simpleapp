@@ -2,9 +2,9 @@ package string
 
 import "fmt"
 
-func Max(inputName string, value string, valLen int) error {
+func Max(value string, valLen int) error {
 	if len(value) > valLen {
-		return fmt.Errorf("the length of %s should be less than %d", inputName, valLen)
+		return fmt.Errorf("should be less than %d characters", valLen)
 	}
 
 	return nil

@@ -1,3 +1,3 @@
 package contracts
 
-type ValidatorFunc func(inputName string, value string, valLen int) error
+type ValidatorFunc func(value string, valLen int) error
