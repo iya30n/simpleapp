@@ -5,6 +5,7 @@ import (
 	"simpleapp/app/models/Admin"
 	"simpleapp/app/modules/jwtHandler"
 	responsehandler "simpleapp/app/modules/responseHandler"
+	errorHelper "simpleapp/core/helpers/error"
 	"simpleapp/core/validator"
 )
 
@@ -35,13 +36,9 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := validator.Validate(r, validationRules); err != nil {
-		var errors []string
-
-		for _, e := range err {
-			errors = append(errors, e.Error())
-		}
-
-		responsehandler.Json(w, map[string][]string{"errors": errors}, http.StatusBadRequest)
+		responsehandler.Json(w,
+			map[string][]string{"errors": errorHelper.Stringify(err)},
+			http.StatusBadRequest)
 
 		return
 	}
