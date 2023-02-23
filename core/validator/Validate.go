@@ -14,20 +14,23 @@ import (
 
 type Rule map[string]string
 
-func Validate(req *http.Request, validationRules Rule) error {
+func Validate(req *http.Request, validationRules Rule) []error {
+	var errors []error
+
 	for inputName, rule := range validationRules {
 		reqInput := req.PostFormValue(inputName)
 
 		for _, ruleName := range strings.Split(rule, "|") {
 			if err := callValidator(ruleName, reqInput); err != nil {
-				return fmt.Errorf("%s: %v", inputName, err.Error())
+				errors = append(errors, fmt.Errorf("%s: %v", inputName, err.Error()))
 			}
 		}
 	}
 
-	return nil
+	return errors
 }
 
+// TODO: find a type or something to act as this.
 var typesList []string = []string{"int", "int32", "int64", "float32", "float64", "string"}
 
 func callValidator(ruleName string, inputVal any) error {
