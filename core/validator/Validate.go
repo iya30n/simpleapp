@@ -5,8 +5,10 @@ import (
 	"log"
 	"net/http"
 	"reflect"
-	"simpleapp/core/types/Array"
+	"strconv"
 	"strings"
+	"simpleapp/core/validator/contracts"
+	stringValidation "simpleapp/core/validator/validations/string"
 )
 
 type Rule map[string]string
@@ -23,16 +25,10 @@ func Validate(req http.Request, validationRules Rule) error {
 	return nil
 }
 
-type dType interface {
-	string | bool | int | int32 | int64 | float32 | float64
-}
-
-func callValidator[dtype dType](inputName string, ruleName string, inputVal dtype) error {
-	typesToCheck := []string{"string", "bool", "int", "int32", "int64", "float32", "float64"}
-
+func callValidator(inputName string, ruleName string, inputVal any) error {
 	inputValType := fmt.Sprint(reflect.TypeOf(inputVal))
 	// checking type of the input.
-	if Array.Contains(ruleName, typesToCheck) && ruleName != inputValType {
+	if ruleName == inputValType && ruleName != inputValType {
 		return fmt.Errorf("type of %s should be %s but %s given", inputName, ruleName, inputValType)
 	}
 
@@ -42,13 +38,18 @@ func callValidator[dtype dType](inputName string, ruleName string, inputVal dtyp
 		log.Fatalf("the validation %s is not valid!", ruleName)
 	}
 
+	funcsList := map[string]contracts.ValidatorFunc{
+		"min": stringValidation.Min,
+		"max": stringValidation.Max,
+	}
+
 	// the value of ruleMethod = "min", ruleVal = 3
 	ruleMethod, ruleVal := splitRule[0], splitRule[1]
-	// TODO: call the ruleMethod from core/validator/validations and return the result
-	
-	/* f := reflect.ValueOf(ruleMethod)
-	result := f.Call([]reflect.Value{reflect.ValueOf(ruleName), reflect.ValueOf(inputVal), reflect.ValueOf(ruleVal)})
-	return result[0]. */
+	if _, ok := funcsList[ruleMethod]; !ok {
+		log.Fatalf("the validation %s is not valid!", ruleMethod)
+	}
 
-	return nil
+	ruleValToInt, _ := strconv.Atoi(ruleVal)
+
+	return funcsList[ruleMethod](inputName, inputVal.(string), ruleValToInt)
 }
