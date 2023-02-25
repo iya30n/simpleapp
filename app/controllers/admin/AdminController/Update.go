@@ -26,9 +26,9 @@ func Update(w http.ResponseWriter, r *http.Request) {
 	name, username, password := p.Sanitize(r.PostFormValue("name")), p.Sanitize(r.PostFormValue("username")), p.Sanitize(r.PostFormValue("password"))
 
 	validationRules := map[string]string{
-		"name":     "string|min:3|max:50",
-		"username": "string|min:3|max:50",
-		"password": "string|min:8|max:100",
+		"name":     "required|string|min:3|max:50",
+		"username": "required|string|min:3|max:50",
+		"password": "required|string|min:8|max:100",
 	}
 
 	if errors := validator.Validate(r, validationRules); errors != nil {

@@ -21,6 +21,15 @@ func Validate(req *http.Request, validationRules Rule) []error {
 		reqInput := req.PostFormValue(inputName)
 
 		for _, ruleName := range strings.Split(rule, "|") {
+			if ruleName == "required" {
+				if reqInput == "" {
+					errors = append(errors, fmt.Errorf("%s is required", inputName))
+					break
+				}
+
+				continue
+			}
+
 			if err := callValidator(ruleName, reqInput); err != nil {
 				errors = append(errors, fmt.Errorf("%s: %v", inputName, err.Error()))
 			}

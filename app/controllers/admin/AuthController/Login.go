@@ -31,8 +31,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	username, password := r.PostFormValue("username"), r.PostFormValue("password")
 
 	validationRules := map[string]string{
-		"username": "string|min:3|max:50",
-		"password": "string|min:8|max:50",
+		"username": "required|string|min:3|max:50",
+		"password": "required|string|min:8|max:50",
 	}
 
 	if err := validator.Validate(r, validationRules); err != nil {
