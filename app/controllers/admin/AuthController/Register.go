@@ -1,12 +1,12 @@
 package AuthController
 
 import (
+	"github.com/microcosm-cc/bluemonday"
 	"net/http"
 	"simpleapp/app/models/Admin"
 	responsehandler "simpleapp/app/modules/responseHandler"
-	"simpleapp/app/validations/adminValidation"
-
-	"github.com/microcosm-cc/bluemonday"
+	errorHelper "simpleapp/core/helpers/error"
+	"simpleapp/core/validator"
 )
 
 var response map[string]string
@@ -18,29 +18,16 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	name, username, password := p.Sanitize(r.PostFormValue("name")), p.Sanitize(r.PostFormValue("username")), p.Sanitize(r.PostFormValue("password"))
 
-	if err := adminValidation.ValidateName(name); err != nil {
-
-		response = map[string]string{"Message": err.Error()}
-
-		responsehandler.Json(w, response, http.StatusBadRequest)
-
-		return
+	validationRules := map[string]string{
+		"name":     "string|min:3|max:50",
+		"username": "string|min:3|max:50",
+		"password": "string|min:8|max:100",
 	}
 
-	if err := adminValidation.ValidateUsername(username); err != nil {
-
-		response = map[string]string{"Message": err.Error()}
-
-		responsehandler.Json(w, response, http.StatusBadRequest)
-
-		return
-	}
-
-	if err := adminValidation.ValidatePassword(password); err != nil {
-
-		response = map[string]string{"Message": err.Error()}
-
-		responsehandler.Json(w, response, http.StatusBadRequest)
+	if errors := validator.Validate(r, validationRules); errors != nil {
+		responsehandler.Json(w,
+			map[string][]string{"errors": errorHelper.Stringify(errors)},
+			http.StatusBadRequest)
 
 		return
 	}

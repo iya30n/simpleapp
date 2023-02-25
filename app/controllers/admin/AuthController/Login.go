@@ -31,7 +31,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	username, password := r.PostFormValue("username"), r.PostFormValue("password")
 
 	validationRules := map[string]string{
-		"username": "string|min:3|max:5",
+		"username": "string|min:3|max:50",
 		"password": "string|min:8|max:50",
 	}
 
@@ -42,26 +42,6 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-
-	/*if err := adminValidation.ValidateUsername(username); err != nil {
-		responseData = map[string]string{
-			"message": fmt.Sprintf("validation error: %v", err.Error()),
-		}
-
-		responsehandler.Json(w, responseData, http.StatusBadRequest)
-
-		return
-	}
-
-	if err := adminValidation.ValidatePassword(password); err != nil {
-		responseData = map[string]string{
-			"message": fmt.Sprintf("validation error: %v", err.Error()),
-		}
-
-		responsehandler.Json(w, responseData, http.StatusBadRequest)
-
-		return
-	}*/
 
 	admin, err := Admin.FindByUsername(username)
 	if err != nil {
