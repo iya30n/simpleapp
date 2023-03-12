@@ -7,14 +7,13 @@ import (
 	"reflect"
 	"simpleapp/core/types/Array"
 	"simpleapp/core/validator/contracts"
+	"simpleapp/core/validator/rules/others"
 	stringrules "simpleapp/core/validator/rules/string"
 	"strconv"
 	"strings"
 )
 
-type Rule map[string]string
-
-func Validate(req *http.Request, validationRules Rule) []error {
+func Validate(req *http.Request, validationRules map[string]string) []error {
 	var errors []error
 
 	for inputName, rule := range validationRules {
@@ -61,8 +60,9 @@ func callValidator(ruleName string, inputVal any) error {
 	}
 
 	funcsList := map[string]contracts.ValidatorFunc{
-		"min": stringrules.Min,
-		"max": stringrules.Max,
+		"min":  stringrules.Min,
+		"max":  stringrules.Max,
+		"same": others.Same,
 	}
 
 	// the value of ruleMethod = "min", ruleVal = 3
