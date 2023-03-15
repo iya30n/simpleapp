@@ -9,7 +9,6 @@ import (
 	"simpleapp/core/validator/contracts"
 	"simpleapp/core/validator/rules/others"
 	stringrules "simpleapp/core/validator/rules/string"
-	"strconv"
 	"strings"
 )
 
@@ -71,6 +70,5 @@ func callValidator(ruleName string, inputVal any) error {
 		log.Fatalf("the validation %s is not valid!", ruleMethod)
 	}
 
-	ruleValToInt, _ := strconv.Atoi(ruleVal)
-	return funcsList[ruleMethod](inputVal.(string), ruleValToInt)
+	return funcsList[ruleMethod](inputVal, ruleVal)
 }
