@@ -1,12 +1,12 @@
 package AdminController
 
 import (
+	"github.com/microcosm-cc/bluemonday"
 	"net/http"
 	"simpleapp/app/models/Admin"
 	responsehandler "simpleapp/app/modules/responseHandler"
-	"simpleapp/app/validations/adminValidation"
-
-	"github.com/microcosm-cc/bluemonday"
+	errorHelper "simpleapp/core/helpers/error"
+	"simpleapp/core/validator"
 )
 
 var response map[string]interface{}
@@ -25,10 +25,16 @@ func Update(w http.ResponseWriter, r *http.Request) {
 
 	name, username, password := p.Sanitize(r.PostFormValue("name")), p.Sanitize(r.PostFormValue("username")), p.Sanitize(r.PostFormValue("password"))
 
-	if err := validator(name, username, password); err != nil {
-		response = map[string]interface{}{"message": err.Error()}
+	validationRules := map[string]string{
+		"name":     "required|string|min:3|max:50",
+		"username": "required|string|min:3|max:50",
+		"password": "required|string|min:8|max:100",
+	}
 
-		responsehandler.Json(w, response, http.StatusBadRequest)
+	if errors := validator.Validate(r, validationRules); errors != nil {
+		responsehandler.Json(w,
+			map[string][]string{"errors": errorHelper.Stringify(errors)},
+			http.StatusBadRequest)
 
 		return
 	}
@@ -54,20 +60,4 @@ func Update(w http.ResponseWriter, r *http.Request) {
 
 	response = map[string]interface{}{"message": "admin updated", "admin": updatedAdmin}
 	responsehandler.Json(w, response, http.StatusAccepted)
-}
-
-func validator(name string, username string, password string) error {
-	if err := adminValidation.ValidateName(name); err != nil {
-		return err
-	}
-
-	if err := adminValidation.ValidateUsername(username); err != nil {
-		return err
-	}
-
-	if err := adminValidation.ValidatePassword(password); err != nil {
-		return err
-	}
-
-	return nil
 }

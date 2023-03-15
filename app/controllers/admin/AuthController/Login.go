@@ -1,13 +1,12 @@
 package AuthController
 
 import (
-	// "encoding/json"
-	"fmt"
 	"net/http"
 	"simpleapp/app/models/Admin"
 	"simpleapp/app/modules/jwtHandler"
 	responsehandler "simpleapp/app/modules/responseHandler"
-	"simpleapp/app/validations/adminValidation"
+	errorHelper "simpleapp/core/helpers/error"
+	"simpleapp/core/validator"
 )
 
 // this solution works for raw json
@@ -31,22 +30,15 @@ var responseData map[string]string
 func Login(w http.ResponseWriter, r *http.Request) {
 	username, password := r.PostFormValue("username"), r.PostFormValue("password")
 
-	if err := adminValidation.ValidateUsername(username); err != nil {
-		responseData = map[string]string{
-			"message": fmt.Sprintf("validation error: %v", err.Error()),
-		}
-
-		responsehandler.Json(w, responseData, http.StatusBadRequest)
-
-		return
+	validationRules := map[string]string{
+		"username": "required|string|min:3|max:50",
+		"password": "required|string|min:8|max:50",
 	}
 
-	if err := adminValidation.ValidatePassword(password); err != nil {
-		responseData = map[string]string{
-			"message": fmt.Sprintf("validation error: %v", err.Error()),
-		}
-
-		responsehandler.Json(w, responseData, http.StatusBadRequest)
+	if err := validator.Validate(r, validationRules); err != nil {
+		responsehandler.Json(w,
+			map[string][]string{"errors": errorHelper.Stringify(err)},
+			http.StatusBadRequest)
 
 		return
 	}
