@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"simpleapp/app/models/Admin"
 	"simpleapp/app/modules/jwtHandler"
-	responsehandler "simpleapp/app/modules/responseHandler"
 	errorHelper "simpleapp/core/helpers/error"
+	"simpleapp/core/responseHandler"
 	"simpleapp/core/validator"
 )
 

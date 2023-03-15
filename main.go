@@ -5,7 +5,7 @@ import (
 	"simpleapp/app/controllers/admin/AdminController"
 	"simpleapp/app/controllers/admin/AuthController"
 	"simpleapp/app/modules/jwtHandler"
-	responsehandler "simpleapp/app/modules/responseHandler"
+	"simpleapp/core/responseHandler"
 )
 
 func authMiddleware(fn http.HandlerFunc) http.HandlerFunc {

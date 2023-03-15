@@ -4,8 +4,8 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 	"net/http"
 	"simpleapp/app/models/Admin"
-	responsehandler "simpleapp/app/modules/responseHandler"
 	errorHelper "simpleapp/core/helpers/error"
+	"simpleapp/core/responseHandler"
 	"simpleapp/core/validator"
 )
 

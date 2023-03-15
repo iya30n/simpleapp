@@ -3,7 +3,7 @@ package AuthController
 import (
 	"net/http"
 	"simpleapp/app/modules/jwtHandler"
-	responsehandler "simpleapp/app/modules/responseHandler"
+	"simpleapp/core/responseHandler"
 )
 
 func Refresh(w http.ResponseWriter, r *http.Request) {
