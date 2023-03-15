@@ -2,7 +2,7 @@ package Admin
 
 import (
 	"database/sql"
-	"simpleapp/app/database"
+	"simpleapp/core/database"
 )
 
 var DB *sql.DB = database.MakeConnection()
