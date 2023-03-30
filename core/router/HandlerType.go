@@ -1,14 +1,17 @@
 package router
 
-import "net/http"
+import (
+	"net/http"
+	"simpleapp/core/middleware"
+)
 
 type RouteType struct {
 	Url             string
 	HttpMethod      string
 	Callable        http.HandlerFunc
-	MiddlewaresList []string
+	MiddlewaresList []middleware.MiddlewareContract
 }
 
-func (rh *RouteType) Middlewares(middlewares ...string) {
-	rh.MiddlewaresList = middlewares
+func (rt *RouteType) Middlewares(middlewares ...middleware.MiddlewareContract) {
+	rt.MiddlewaresList = append(rt.MiddlewaresList, middlewares...)
 }

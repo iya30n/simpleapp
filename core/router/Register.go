@@ -27,7 +27,7 @@ func register(route string, method string, controllerMethod http.HandlerFunc) *R
 		Callable:   controllerMethod,
 	}
 
-	routes = append(routes, routeHandler)
+	routes = append(routes, &routeHandler)
 
 	return &routeHandler
 }
