@@ -1,3 +1,3 @@
 package router
 
-var routes []RouteType
+var routes []*RouteType
